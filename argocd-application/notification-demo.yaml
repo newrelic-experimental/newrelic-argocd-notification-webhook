@@ -4,7 +4,7 @@ metadata:
   name: notification-demo
   namespace: argocd
   annotations:
-    notifications.argoproj.io/subscribe.newrelic-app-deployed.newrelic: ""
+    notifications.argoproj.io/subscribe.app-deployed.newrelic: ""
     entityguid: "<NEW RELIC ENTITY GUID>"
 spec:
   destination:
