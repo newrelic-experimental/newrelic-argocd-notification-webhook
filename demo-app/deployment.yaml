@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs-demo-app
+  template:
+    metadata:
+      labels:
+        app: nodejs-demo-app
+    spec:
+      containers:
+      - name: app
+        image: bschmitt769/nodejs-express-app:newrelic
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: APP_VERSION
+          value: "v1"
+        - name: NEW_RELIC_LICENSE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nr-license-key
+              key: nr-license-key
+        - name: NEW_RELIC_APP_NAME
+          value: nodejs-demo-app
+        - name: DB_HOST
+          value: fakedb-service.notification-demo.svc.cluster.local
+        - name: DB_PORT
+          value: "9999"
+        - name: TEST
+          value: testing12345
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-app-demo-service
+spec:
+  selector:
+    app: nodejs-demo-app
+  ports:
+  - port: 80
+    targetPort: 3000
+    name: http

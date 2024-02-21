@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: notifications-controller
+    app.kubernetes.io/name: argocd-notifications-controller
+    app.kubernetes.io/part-of: argocd
+  name: argocd-notifications-cm
+data:
+  trigger.app-deployed: |
+    - description: Application is synced and healthy. Triggered once per commit.
+      oncePer: app.status.sync.revision
+      send:
+      - newrelic-app-deployed
+      when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+  template.newrelic-app-deployed: |
+    webhook:
+      newrelic:
+        method: POST
+        body: |
+          mutation {
+            changeTrackingCreateDeployment(
+              deployment: { 
+                version: "{{.app.status.sync.revision}}",
+                entityGuid: "{{.app.metadata.annotations.entityguid}}",
+                commit: "{{.app.status.sync.revision}}",
+                user: "{{(call .repo.GetCommitMetadata .app.status.sync.revision).Author}}",
+                deploymentType: BASIC,
+                description: "{{(call .repo.GetCommitMetadata .app.status.sync.revision).Message}}"
+              }
+            ) {
+              deploymentId
+              entityGuid
+            }
+          }
+  service.webhook.newrelic: |
+    url: https://api.newrelic.com/graphql
+    headers:
+    - name: Content-Type
+      value: application/graphql
+    - name: Api-Key
+      value: $newrelic-apiKey

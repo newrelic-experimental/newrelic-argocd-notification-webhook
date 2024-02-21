@@ -1,58 +1,116 @@
 <a href="https://opensource.newrelic.com/oss-category/#new-relic-experimental"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/dark/Experimental.png"><source media="(prefers-color-scheme: light)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Experimental.png"><img alt="New Relic Open Source experimental project banner." src="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Experimental.png"></picture></a>
 
 # New Relic ArgoCD Notification Webhook
-![GitHub forks](https://img.shields.io/github/forks/newrelic-experimental/newrelic-experimental-FIT-template?style=social)
-![GitHub stars](https://img.shields.io/github/stars/newrelic-experimental/newrelic-experimental-FIT-template?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/newrelic-experimental/newrelic-experimental-FIT-template?style=social)
+![GitHub forks](https://img.shields.io/github/forks/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
+![GitHub stars](https://img.shields.io/github/stars/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
 
-![GitHub all releases](https://img.shields.io/github/downloads/newrelic-experimental/newrelic-experimental-FIT-template/total)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/newrelic-experimental/newrelic-experimental-FIT-template)
-![GitHub last commit](https://img.shields.io/github/last-commit/newrelic-experimental/newrelic-experimental-FIT-template)
-![GitHub Release Date](https://img.shields.io/github/release-date/newrelic-experimental/newrelic-experimental-FIT-template)
-
-
-![GitHub issues](https://img.shields.io/github/issues/newrelic-experimental/newrelic-experimental-FIT-template)
-![GitHub issues closed](https://img.shields.io/github/issues-closed/newrelic-experimental/newrelic-experimental-FIT-template)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/newrelic-experimental/newrelic-experimental-FIT-template)
-![GitHub pull requests closed](https://img.shields.io/github/issues-pr-closed/newrelic-experimental/newrelic-experimental-FIT-template)
+![GitHub all releases](https://img.shields.io/github/downloads/newrelic-experimental/newrelic-argocd-notification-webhook/total)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/newrelic-experimental/newrelic-argocd-notification-webhook)
+![GitHub last commit](https://img.shields.io/github/last-commit/newrelic-experimental/newrelic-argocd-notification-webhook)
+![GitHub Release Date](https://img.shields.io/github/release-date/newrelic-experimental/newrelic-argocd-notification-webhook)
 
 
->[Brief description - what is the project and value does it provide? How often should users expect to get releases? How is versioning set up? Where does this project want to go?]
+![GitHub issues](https://img.shields.io/github/issues/newrelic-experimental/newrelic-argocd-notification-webhook)
+![GitHub issues closed](https://img.shields.io/github/issues-closed/newrelic-experimental/newrelic-argocd-notification-webhook)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/newrelic-experimental/newrelic-argocd-notification-webhook)
+![GitHub pull requests closed](https://img.shields.io/github/issues-pr-closed/newrelic-experimental/newrelic-argocd-notification-webhook)
+
+
+>This project contains example YAML for enabling [ArgoCD Notifications](https://argocd-notifications.readthedocs.io/en/stable/) as [New Relic Change Tracking](https://docs.newrelic.com/docs/change-tracking/change-tracking-graphql/) events.
 
 ## Value
 
 |Metrics | Events | Logs | Traces | Visualization | Automation |
 |:-:|:-:|:-:|:-:|:-:|:-:|
-|:white_check_mark:|:white_check_mark:|:x:|:white_check_mark:|:x:|:x:|
-
-### List of Metrics,Events,Logs,Traces
-|Name | Type | Description |
-|:-:|:-:|:-:|
-|*metric.name* | Metric| *description*|
-|*event.name* | Event|  *description*|
-|*log.name* | Log|  *description*|
-|*trace.name*| Trace| *description*
-|---|---|---|
+|:x:|:white_check_mark:|:x:|:x:|:x:|:white_check_mark:|
 
 ## Installation
 
-> [Include a step-by-step procedure on how to get your code installed. Be sure to include any third-party dependencies that need to be installed separately]
+1. Define your New Relic User API Key in your `argocd-notifications-secret` Secret.  
 
-## Getting Started
+An example can be found [here](./argocd-notifications-secret.yaml).
 
->[Simple steps to start working with the software similar to a "Hello World"]
+```yaml
+...
+stringData:
+  newrelic-apiKey: NRAK-YOURAPIKEYGOESHERE
+...
+```
 
-## Usage
+2. Add the New Relic `trigger`, `template`, and `service` to your `argocd-notifications-cm` ConfigMap.  
 
->[**Optional** - Include more thorough instructions on how to use the software. This section might not be needed if the Getting Started section is enough. Remove this section if it's not needed.]
+The default catalog can be found [here](https://raw.githubusercontent.com/argoproj/argo-cd/master/notifications_catalog/install.yaml).
 
-## Building
+```yaml
+...
+trigger.app-deployed: |
+  - description: Application is synced and healthy. Triggered once per commit.
+  oncePer: app.status.sync.revision
+  send:
+   - newrelic-app-deployed
+  when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+template.newrelic-app-deployed: |
+  webhook:
+    newrelic:
+      method: POST
+      body: |
+        mutation {
+          changeTrackingCreateDeployment(
+            deployment: { 
+            version: "{{.app.status.sync.revision}}",
+            entityGuid: "{{.app.metadata.annotations.entityguid}}",
+            commit: "{{.app.status.sync.revision}}",
+            user: "ArgoCD",
+            deploymentType: BASIC,
+            description: "New version of an application {{.app.metadata.name}} has been deployed."
+            }
+          ) {
+            deploymentId
+             entityGuid
+          }
+        }
+service.webhook.newrelic: |
+  url: https://api.newrelic.com/graphql
+  headers:
+  - name: Content-Type
+    value: application/graphql
+  - name: Api-Key
+    value: $newrelic-apiKey
+...
+```
 
->[**Optional** - Include this section if users will need to follow specific instructions to build the software from source. Be sure to include any third party build dependencies that need to be installed separately. Remove this section if it's not needed.]
+3. Apply the changes to your ArgoCD instance.
 
-## Testing
+```yaml
+kubectl apply -f argocd-notifications-secret.yaml -n argocd
+kubectl apply -f argocd-notifications-cm.yaml -n argocd
+```
 
->[**Optional** - Include instructions on how to run tests if we include tests with the codebase. Remove this section if it's not needed.]
+## Configuring your ArgoCD Applications
+
+An ArgoCD Application needs to "subscribe" to notifications so you'll need to add the following annotations to your ArgoCD Application.
+
+Check out the example application [here](./argocd-application/notification-demo.yaml).
+
+```yaml
+...
+annotations:
+  notifications.argoproj.io/subscribe.newrelic-app-deployed.newrelic: ""
+  entityguid: "<NEW RELIC ENTITY GUID>"  
+...
+```
+
+`entityguid` is the New Relic entity guid for the APM application.  You'll need to perform an initial deployment of your app in order to generate an entity guid in the New Relic platform.  Subsequent deployments can then be associated with this guid.
+
+![New Relic Entity Guid](<./images/entityguid.jpg>)
+
+## New Relic Change Tracking
+
+After the ArgoCD deployment process completes, you should see the change tracking event and the before and after state of the application in New Relic.
+
+![New Relic Change Tracking](./images/changetracking.png)
+
 
 ## Support
 
@@ -63,7 +121,7 @@ New Relic has open-sourced this project. This project is provided AS-IS WITHOUT 
 
 ## Contributing
 
-We encourage your contributions to improve [Project Name]! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. If you have any questions, or to execute our corporate CLA, required if your contribution is on behalf of a company, please drop us an email at opensource@newrelic.com.
+We encourage your contributions to improve the New Relic ArgoCD Notification Webhook! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. If you have any questions, or to execute our corporate CLA, required if your contribution is on behalf of a company, please drop us an email at opensource@newrelic.com.
 
 **A note about vulnerabilities**
 
@@ -73,6 +131,5 @@ If you believe you have found a security vulnerability in this project or any of
 
 ## License
 
-[Project Name] is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
+The New Relic ArgoCD Notification Webhook is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
 
->[If applicable: [Project Name] also uses source code from third-party libraries. You can find full details on which libraries are used and the terms under which they are licensed in the third-party notices document.]

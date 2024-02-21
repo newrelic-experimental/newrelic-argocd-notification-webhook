@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notification-demo
+  namespace: argocd
+  annotations:
+    notifications.argoproj.io/subscribe.newrelic-app-deployed.newrelic: ""
+    entityguid: "<NEW RELIC ENTITY GUID>"
+spec:
+  destination:
+    name: ''
+    namespace: notification-demo
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: demo-app
+    repoURL: 'https://github.com/newrelic-experimental/newrelic-argocd-notification-webhook'
+    targetRevision: main
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
