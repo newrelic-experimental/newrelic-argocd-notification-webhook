@@ -5,12 +5,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
 ![GitHub watchers](https://img.shields.io/github/watchers/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
 
-![GitHub all releases](https://img.shields.io/github/downloads/newrelic-experimental/newrelic-argocd-notification-webhook/total)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/newrelic-experimental/newrelic-argocd-notification-webhook)
 ![GitHub last commit](https://img.shields.io/github/last-commit/newrelic-experimental/newrelic-argocd-notification-webhook)
-![GitHub Release Date](https://img.shields.io/github/release-date/newrelic-experimental/newrelic-argocd-notification-webhook)
-
-
 ![GitHub issues](https://img.shields.io/github/issues/newrelic-experimental/newrelic-argocd-notification-webhook)
 ![GitHub issues closed](https://img.shields.io/github/issues-closed/newrelic-experimental/newrelic-argocd-notification-webhook)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/newrelic-experimental/newrelic-argocd-notification-webhook)
