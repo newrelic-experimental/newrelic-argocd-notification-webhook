@@ -51,7 +51,7 @@ spec:
     spec:
       containers:
       - name: notification-load-gen
-        image: busybox
+        image: yauritux/busybox-curl
         command: ["/bin/sh"]
         args: ["-c", "while true; do curl http://nodejs-app-demo-service; sleep 1; done"]
         
