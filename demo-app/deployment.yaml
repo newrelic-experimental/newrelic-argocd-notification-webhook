@@ -53,7 +53,7 @@ spec:
       - name: notification-load-gen
         image: yauritux/busybox-curl
         command: ["/bin/sh"]
-        args: ["-c", "while true; do curl -s http://nodejs-app-demo-service; sleep 0.5; done"]
+        args: ["-c", "while true; do curl -s http://nodejs-app-demo-service; sleep 1; done"]
         
 ---
 apiVersion: v1
