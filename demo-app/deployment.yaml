@@ -35,6 +35,27 @@ spec:
         - name: TEST
           value: testing123
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-load-gen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-load-gen
+  template:
+    metadata:
+      labels:
+        app: notification-load-gen
+    spec:
+      containers:
+      - name: notification-load-gen
+        image: busybox
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do curl http://nodejs-app-demo-service; sleep 1; done"]
+        
+---
 apiVersion: v1
 kind: Service
 metadata:
