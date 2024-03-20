@@ -1,6 +1,6 @@
-<a href="https://opensource.newrelic.com/oss-category/#new-relic-experimental"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/dark/Experimental.png"><source media="(prefers-color-scheme: light)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Experimental.png"><img alt="New Relic Open Source experimental project banner." src="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Experimental.png"></picture></a>
+<a href="https://opensource.newrelic.com/oss-category/#example-code"><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/dark/Example_Code.png"><source media="(prefers-color-scheme: light)" srcset="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Example_Code.png"><img alt="New Relic Open Source example project banner." src="https://github.com/newrelic/opensource-website/raw/main/src/images/categories/Example_Code.png"></picture></a>
 
-# New Relic ArgoCD Notification Webhook
+# New Relic Argo CD Notification Webhook
 ![GitHub forks](https://img.shields.io/github/forks/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
 ![GitHub stars](https://img.shields.io/github/stars/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
 ![GitHub watchers](https://img.shields.io/github/watchers/newrelic-experimental/newrelic-argocd-notification-webhook?style=social)
@@ -12,7 +12,7 @@
 ![GitHub pull requests closed](https://img.shields.io/github/issues-pr-closed/newrelic-experimental/newrelic-argocd-notification-webhook)
 
 
-This repo contains example configurations for sending ArgoCD Notification webhooks as New Relic Change Tracking events. [ArgoCD Notifications](https://argocd-notifications.readthedocs.io/en/stable/) as [New Relic Change Tracking](https://docs.newrelic.com/docs/change-tracking/change-tracking-graphql/) events.
+This repo contains example configurations for sending Argo CD Notification webhooks as New Relic Change Tracking events. [Argo CD Notifications](https://argocd-notifications.readthedocs.io/en/stable/) as [New Relic Change Tracking](https://docs.newrelic.com/docs/change-tracking/change-tracking-graphql/) events.
 
 ## Value
 
@@ -56,7 +56,7 @@ template.newrelic-app-deployed: |
             version: "{{.app.status.sync.revision}}",
             entityGuid: "{{.app.metadata.annotations.entityguid}}",
             commit: "{{.app.status.sync.revision}}",
-            user: "ArgoCD",
+            user: "Argo CD",
             deploymentType: BASIC,
             description: "New version of an application {{.app.metadata.name}} has been deployed."
             }
@@ -75,16 +75,16 @@ service.webhook.newrelic: |
 ...
 ```
 
-3. Apply the changes to your ArgoCD instance.
+3. Apply the changes to your Argo CD instance.
 
 ```yaml
 kubectl apply -f argocd-notifications-secret.yaml -n argocd
 kubectl apply -f argocd-notifications-cm.yaml -n argocd
 ```
 
-## Configuring your ArgoCD Applications
+## Configuring your Argo CD Applications
 
-An ArgoCD Application needs to "subscribe" to notifications so you'll need to add the following annotations to your ArgoCD Application.
+An Argo CD Application needs to "subscribe" to notifications so you'll need to add the following annotations to your Argo CD Application.
 
 Check out the example application [here](./argocd-application/notification-demo.yaml).
 
@@ -124,7 +124,7 @@ New Relic has open-sourced this project. This project is provided AS-IS WITHOUT 
 
 ## Contributing
 
-We encourage your contributions to improve the New Relic ArgoCD Notification Webhook! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. If you have any questions, or to execute our corporate CLA, required if your contribution is on behalf of a company, please drop us an email at opensource@newrelic.com.
+We encourage your contributions to improve the New Relic Argo CD Notification Webhook! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project. If you have any questions, or to execute our corporate CLA, required if your contribution is on behalf of a company, please drop us an email at opensource@newrelic.com.
 
 **A note about vulnerabilities**
 
@@ -134,5 +134,5 @@ If you believe you have found a security vulnerability in this project or any of
 
 ## License
 
-The New Relic ArgoCD Notification Webhook is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
+The New Relic Argo CD Notification Webhook is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) License.
 
